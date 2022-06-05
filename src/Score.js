@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, Stack, HStack, VStack, Flex, Spacer, Radio, RadioGroup, Text, Heading, Center, Grid, GridItem, Select } from '@chakra-ui/react'
+import { Box, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
 import { CopyBlock, dracula } from "react-code-blocks";
-import { Piano, KeyboardShortcuts } from 'react-piano';
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import { KeyboardShortcuts } from 'react-piano';
+import { Button } from '@chakra-ui/react'
 
 import SoundfontPianoRoll from './SoundfrontPianoRoll';
 import SheetScore from './SheetScore';
@@ -17,6 +17,8 @@ const validKeys = [naturalKey].concat(sharpKeys).concat(flatKeys)
 
 const sharps = ["F", "C", "G", "D", "A", "E", "B"];
 const flats = sharps.slice().reverse();
+
+const restIndex = -1;
 
 class Score extends React.Component {
   constructor(props) {
@@ -50,7 +52,7 @@ class Score extends React.Component {
   }
 
   startPlayingNote = midiNumber => {
-    if (Object.keys(this.state.noteTimers).indexOf(midiNumber) == -1 || this.state.noteTimers[midiNumber] == null) {
+    if (Object.keys(this.state.noteTimers).indexOf(midiNumber) === -1 || this.state.noteTimers[midiNumber] === null) {
       const now = new Date()
       this.setState(prevState => ({
         hasRecorded: false,
@@ -71,6 +73,14 @@ class Score extends React.Component {
         notes: prevState.noteTimers[midiNumber] != null ? [...prevState.notes, {"note": midiNumber, "time": now - prevState.noteTimers[midiNumber]}] : prevState.notes,
         noteTimers: {...prevState.noteTimers, [midiNumber]: null}
       }));
+    }
+  };
+
+  insertRest = () => {
+    if (this.state.notes.length < this.state.config.maxNotes) {
+      this.setState(prevState => ({
+        notes: [...prevState.notes, {"note": restIndex, "time": 0}]
+      }))
     }
   };
 
@@ -106,11 +116,15 @@ class Score extends React.Component {
   buildScore = (notes) => {
     var scoreText = `X: 1\nM: 4/4\nL: 1/4\nK: ${this.state.key} clef=${this.state.clef}\n                                                                                           \n|`
     for (let i = 0; i < notes.length; i++) {
-      const prefix = i % 4 == 0 && i != 0 ? ' |' : '';
-      const suffix = this.state.clef == 'treble' ? '' : ',';
-      const noteNotation = this.mapNoteToKey(notes[i].note)
+      const prefix = i % 4 === 0 && i !== 0 ? ' |' : '';
+      if (notes[i].note === restIndex) {
+        scoreText += `${prefix} z`
+      } else {
+        const suffix = this.state.clef === 'treble' ? '' : ',';
+        const noteNotation = this.mapNoteToKey(notes[i].note)
 
-      scoreText += `${prefix} ${noteNotation}${suffix}`;
+        scoreText += `${prefix} ${noteNotation}${suffix}`;
+      }
     }
 
     return scoreText
@@ -188,14 +202,14 @@ class Score extends React.Component {
               </GridItem>
               <GridItem>
                 <VStack>
-                  <Button onClick={this.resetScore}>Reset</Button>
+                  <Button onClick={this.resetScore}>Clear Notes</Button>
                   <Button onClick={this.props.submit}>Submit</Button>
                 </VStack>
               </GridItem>
             </Grid>
           </GridItem>
           <GridItem>
-            <HStack spacing={24}>
+            <HStack spacing={10}>
               <SoundfontPianoRoll
                 audioContext={this.props.audioContext}
                 hostname={this.props.soundfontHostname}
@@ -206,6 +220,7 @@ class Score extends React.Component {
                 onStopNoteInput={this.stopPlayingNote}
                 keyboardShortcuts={keyboardShortcuts}
               />
+              <Button onClick={this.insertRest}>Rest</Button>
               <CopyBlock
                 text={scoreText}
                 theme={dracula}
