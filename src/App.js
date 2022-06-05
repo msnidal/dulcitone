@@ -1,23 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
+import Score from './Score.js'
+
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Score 
+        audioContext={audioContext}
+        soundfontHostname={soundfontHostname}
+        submit={() => console.log("Hello")}
+      />
     </div>
   );
 }
