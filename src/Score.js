@@ -20,6 +20,8 @@ const flats = sharps.slice().reverse();
 
 const restIndex = -1;
 
+
+
 class Score extends React.Component {
   constructor(props) {
     super(props);
@@ -31,16 +33,6 @@ class Score extends React.Component {
       hasRecorded: false,
       notes: [],
       noteTimers: {},
-      config: {
-        instrumentName: 'acoustic_grand_piano',
-        noteRange: {
-          first: 48, // middle C
-          last: 59 // B above
-        },
-        keyboardShortcutOffset: 0,
-        maxNotes: 20,
-        pianoWidth: 500,
-      },
     };
   }
 
@@ -59,7 +51,7 @@ class Score extends React.Component {
   };
 
   stopPlayingNote = (midiNumber) => {
-    if (this.state.hasRecorded === false && this.state.notes.length < this.state.config.maxNotes) {
+    if (this.state.hasRecorded === false && this.state.notes.length < this.props.config.maxNotes) {
       const now = new Date();
       this.setState(prevState => ({
         hasRecorded: true,
@@ -70,7 +62,7 @@ class Score extends React.Component {
   };
 
   insertRest = () => {
-    if (this.state.notes.length < this.state.config.maxNotes) {
+    if (this.state.notes.length < this.props.config.maxNotes) {
       this.setState(prevState => ({
         notes: [...prevState.notes, {"note": restIndex, "time": 0}]
       }))
@@ -158,11 +150,6 @@ class Score extends React.Component {
   };
 
   render() {
-    const keyboardShortcuts = KeyboardShortcuts.create({
-      firstNote: this.state.config.noteRange.first + this.state.config.keyboardShortcutOffset,
-      lastNote: this.state.config.noteRange.last + this.state.config.keyboardShortcutOffset,
-      keyboardConfig: KeyboardShortcuts.HOME_ROW,
-    });
     const scoreText = this.buildScore(this.state.notes);
 
     return (
@@ -175,14 +162,12 @@ class Score extends React.Component {
           <GridItem>
             <HStack spacing={10}>
               <SoundfontPianoRoll
-                audioContext={this.props.audioContext}
-                hostname={this.props.soundfontHostname}
-                instrumentName={this.state.config.instrumentName}
-                noteRange={this.state.config.noteRange}
-                width={this.state.config.pianoWidth}
+                config={this.props.config}
+                instrument={this.props.instrument}
                 onPlayNoteInput={this.startPlayingNote}
                 onStopNoteInput={this.stopPlayingNote}
-                keyboardShortcuts={keyboardShortcuts}
+                playNote={this.props.playNote}
+                stopNote={this.props.stopNote}
               />
               <Button onClick={this.insertRest}>Rest</Button>
               <CopyBlock
@@ -195,7 +180,7 @@ class Score extends React.Component {
           <GridItem>
             <ConfigurationPanel 
               validKeys={validKeys} 
-              config={this.state.config} 
+              config={this.props.config} 
               setClef={this.setClef} 
               setKey={this.setKey} 
               resetScore={this.resetScore} 
