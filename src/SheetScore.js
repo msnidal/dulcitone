@@ -7,6 +7,9 @@ function SheetScore(props) {
       <Heading>Dulcitone</Heading>
       <SheetMusic
         notation={props.scoreText}
+        isPlaying={props.isPlaying}
+        onEvent={props.onEvent}
+        onLineEnd={props.onLineEnd}
       />
     </Box>
   );

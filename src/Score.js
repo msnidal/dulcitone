@@ -33,7 +33,11 @@ class Score extends React.Component {
       hasRecorded: false,
       notes: [],
       noteTimers: {},
-      activeNotes: [],
+      activeNote: {
+        note: [],
+        startTime: null,
+      },
+      isPlaying: false,
     };
   }
 
@@ -158,30 +162,36 @@ class Score extends React.Component {
     event.notes.forEach(
       (note) => {
         const midiNumber = MidiNumbers.fromNote(note.name)
-        console.log(`${midiNumber} ${note.name} ${note.duration}`)
+        const now = new Date()
+
+        this.setState({activeNote: {note: [midiNumber], startTime: now}})
+
+        setTimeout(
+          () => {
+            this.setState((previousState) => {
+              if (previousState.activeNote.startTime === now) {
+                return {
+                  activeNote: {note: [], startTime: null}
+                }
+              }
+            })
+          },
+          note.duration * 900
+        )
       }
     )
   }
 
-  replay = () => {
-    var rollingTime = 0;
-
-    for (let i = 0; i < this.state.notes.length; i++) {
-      const note = this.state.notes[i];
-      if (note.note !== restIndex) {
-        setTimeout(
-          () => this.setState({activeNotes: [note.note]}),
-          //() => this.props.playNote(note.note, note.time),
-          rollingTime
-        )
-      }
-      rollingTime += note.time + 120;
+  onLineEnd = (event) => {
+    if (!event || event.milliseconds === 0) {
+      return
     }
 
-    setTimeout(
-      () => this.setState({activeNotes: []}),
-      rollingTime
-    )
+    this.setState({activeNote: {note: [], startTime: null}, isPlaying: false})
+  }
+
+  replay = () => {
+    this.setState({isPlaying: true})
   }
 
   render() {
@@ -192,7 +202,12 @@ class Score extends React.Component {
       <Box borderWidth='1px' borderRadius='lg'>
         <Grid templateRows={'200px 250px 100px'} gap={6}>
           <GridItem>
-            <SheetScore scoreText={scoreText} />
+            <SheetScore
+              scoreText={scoreText} 
+              isPlaying={this.state.isPlaying}
+              onEvent={this.onNoteEvent}
+              onLineEnd={this.onLineEnd}
+            />
           </GridItem>
           <GridItem>
             <HStack spacing={10}>
@@ -201,7 +216,7 @@ class Score extends React.Component {
                 instrument={this.props.instrument}
                 onPlayNoteInput={this.startPlayingNote}
                 onStopNoteInput={this.stopPlayingNote}
-                activeNotes={this.state.activeNotes}
+                activeNotes={this.state.activeNote.note}
                 playNote={this.props.playNote}
                 stopNote={this.props.stopNote}
               />
