@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Button, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
 import { CopyBlock, dracula } from "react-code-blocks";
-import { KeyboardShortcuts } from 'react-piano';
+import { KeyboardShortcuts, MidiNumbers } from 'react-piano';
 
-import SoundfontPianoRoll from './SoundfontPianoRoll';
+import PianoRoll from './PianoRoll';
 import SheetScore from './SheetScore';
 import ConfigurationPanel from './ConfigurationPanel';
 
@@ -33,6 +33,7 @@ class Score extends React.Component {
       hasRecorded: false,
       notes: [],
       noteTimers: {},
+      activeNotes: [],
     };
   }
 
@@ -149,6 +150,40 @@ class Score extends React.Component {
     });
   };
 
+  onNoteEvent = (event) => {
+    if (!event) {
+      return
+    }
+
+    event.notes.forEach(
+      (note) => {
+        const midiNumber = MidiNumbers.fromNote(note.name)
+        console.log(`${midiNumber} ${note.name} ${note.duration}`)
+      }
+    )
+  }
+
+  replay = () => {
+    var rollingTime = 0;
+
+    for (let i = 0; i < this.state.notes.length; i++) {
+      const note = this.state.notes[i];
+      if (note.note !== restIndex) {
+        setTimeout(
+          () => this.setState({activeNotes: [note.note]}),
+          //() => this.props.playNote(note.note, note.time),
+          rollingTime
+        )
+      }
+      rollingTime += note.time + 120;
+    }
+
+    setTimeout(
+      () => this.setState({activeNotes: []}),
+      rollingTime
+    )
+  }
+
   render() {
     const scoreText = this.buildScore(this.state.notes);
 
@@ -161,11 +196,12 @@ class Score extends React.Component {
           </GridItem>
           <GridItem>
             <HStack spacing={10}>
-              <SoundfontPianoRoll
+              <PianoRoll
                 config={this.props.config}
                 instrument={this.props.instrument}
                 onPlayNoteInput={this.startPlayingNote}
                 onStopNoteInput={this.stopPlayingNote}
+                activeNotes={this.state.activeNotes}
                 playNote={this.props.playNote}
                 stopNote={this.props.stopNote}
               />
@@ -184,7 +220,7 @@ class Score extends React.Component {
               setClef={this.setClef} 
               setKey={this.setKey} 
               resetScore={this.resetScore} 
-              replay={this.resetScore} 
+              replay={this.replay} 
               submit={this.props.submit} 
             />
           </GridItem>
