@@ -1,11 +1,11 @@
 import React from 'react';
-import { Box, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
+import { Box, Button, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
 import { CopyBlock, dracula } from "react-code-blocks";
 import { KeyboardShortcuts } from 'react-piano';
-import { Button } from '@chakra-ui/react'
 
-import SoundfontPianoRoll from './SoundfrontPianoRoll';
+import SoundfontPianoRoll from './SoundfontPianoRoll';
 import SheetScore from './SheetScore';
+import ConfigurationPanel from './ConfigurationPanel';
 
 const sharpScale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatScale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -42,16 +42,9 @@ class Score extends React.Component {
         pianoWidth: 500,
       },
     };
-
-    this.startPlayingNote = this.startPlayingNote.bind(this);
-    this.stopPlayingNote = this.stopPlayingNote.bind(this);
-    this.resetScore = this.resetScore.bind(this);
-    this.setClef = this.setClef.bind(this);
-    this.setKey = this.setKey.bind(this);
-    this.mapNoteToKey = this.mapNoteToKey.bind(this);
   }
 
-  startPlayingNote = midiNumber => {
+  startPlayingNote = (midiNumber) => {
     if (Object.keys(this.state.noteTimers).indexOf(midiNumber) === -1 || this.state.noteTimers[midiNumber] === null) {
       const now = new Date()
       this.setState(prevState => ({
@@ -65,7 +58,7 @@ class Score extends React.Component {
     }
   };
 
-  stopPlayingNote = midiNumber => {
+  stopPlayingNote = (midiNumber) => {
     if (this.state.hasRecorded === false && this.state.notes.length < this.state.config.maxNotes) {
       const now = new Date();
       this.setState(prevState => ({
@@ -158,7 +151,7 @@ class Score extends React.Component {
    }
   };
 
-  resetScore() {
+  resetScore = () =>{
     this.setState({
       notes: []
     });
@@ -175,38 +168,9 @@ class Score extends React.Component {
     return (
       <Center>
       <Box borderWidth='1px' borderRadius='lg'>
-        <Grid templateRows={'200px 100px 1fr'} gap={6}>
+        <Grid templateRows={'200px 250px 100px'} gap={6}>
           <GridItem>
             <SheetScore scoreText={scoreText} />
-          </GridItem>
-          <GridItem>
-            <Grid templateColumns={'1fr 1fr 1fr'} gap={10}>
-              <GridItem>
-                <VStack>
-                  <Text fontSize='md'>Select a key:</Text>
-                  <Select onChange={this.setKey}>
-                    {validKeys.map((object, i) => <option value={object}>{object}</option>)}
-                  </Select>
-                </VStack>
-              </GridItem>
-              <GridItem>
-                <VStack>
-                  <Text fontSize='md'>Select a clef:</Text>
-                  <RadioGroup defaultValue='treble' onChange={this.setClef}>
-                    <Stack>
-                      <Radio value='treble'>Treble</Radio>
-                      <Radio value='bass'>Bass</Radio>
-                    </Stack>
-                  </RadioGroup>
-                </VStack>
-              </GridItem>
-              <GridItem>
-                <VStack>
-                  <Button onClick={this.resetScore}>Clear Notes</Button>
-                  <Button onClick={this.props.submit}>Submit</Button>
-                </VStack>
-              </GridItem>
-            </Grid>
           </GridItem>
           <GridItem>
             <HStack spacing={10}>
@@ -224,8 +188,20 @@ class Score extends React.Component {
               <CopyBlock
                 text={scoreText}
                 theme={dracula}
+                language={'text'}
               />
             </HStack>
+          </GridItem>
+          <GridItem>
+            <ConfigurationPanel 
+              validKeys={validKeys} 
+              config={this.state.config} 
+              setClef={this.setClef} 
+              setKey={this.setKey} 
+              resetScore={this.resetScore} 
+              replay={this.resetScore} 
+              submit={this.props.submit} 
+            />
           </GridItem>
         </Grid>
       </Box>

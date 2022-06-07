@@ -45,7 +45,6 @@ class SoundfontPianoRoll extends React.Component {
     this.setState({
       instrument: null,
     });
-    console.log(`Loady loady ${instrumentName}!`)
     Soundfont.instrument(this.props.audioContext, instrumentName, {
       format: this.props.format,
       soundfont: this.props.soundfont,
@@ -53,7 +52,6 @@ class SoundfontPianoRoll extends React.Component {
         return `${this.props.hostname}/${soundfont}/${name}-${format}.js`;
       },
     }).then((instrument) => {
-      console.log(`Callyback ${instrument}`)
       this.setState({
         instrument,
       });
