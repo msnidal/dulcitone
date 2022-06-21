@@ -22,7 +22,7 @@ const restIndex = -1;
 
 
 
-class Score extends React.Component {
+class Dulcitone extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -246,4 +246,4 @@ class Score extends React.Component {
   }
 }
 
-export default Score;
+export default Dulcitone;

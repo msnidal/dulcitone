@@ -2,7 +2,7 @@
 import React from 'react';
 import Soundfont from 'soundfont-player';
 import './App.css';
-import Score from './Score.js'
+import Dulcitone from './Dulcitone'
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const config = {
@@ -97,7 +97,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Score 
+        <Dulcitone 
           audioContext={this.state.audioContext}
           instrument={this.state.instrument}
           playNote={this.playNote}

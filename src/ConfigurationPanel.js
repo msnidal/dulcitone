@@ -1,5 +1,5 @@
 import { Box, Button, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
-import validKeys from './Score'
+import validKeys from './Dulcitone'
 
 function ConfigurationPanel(props) {
   return (
