@@ -26,10 +26,7 @@ function ConfigurationPanel(props) {
       <GridItem>
         <VStack>
           <Button onClick={props.replay}>Replay!</Button>
-          <HStack>
-            <Button onClick={props.resetScore}>Clear Notes</Button>
-            <Button onClick={props.submit}>Submit</Button>
-          </HStack>
+          <Button onClick={props.resetScore}>Clear Notes</Button>
         </VStack>
       </GridItem>
     </Grid>

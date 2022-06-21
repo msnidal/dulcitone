@@ -2,7 +2,7 @@
 import React from 'react';
 import Soundfont from 'soundfont-player';
 import './App.css';
-import Dulcitone from './Dulcitone'
+import Dulcitone from './components/Dulcitone'
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const config = {
@@ -103,7 +103,6 @@ class App extends React.Component {
           playNote={this.playNote}
           stopNote={this.stopNote}
           soundfontHostname={this.state.config.soundfontHostname}
-          submit={() => console.log("Hello")}
           config={this.state.config}
         />
       </div>

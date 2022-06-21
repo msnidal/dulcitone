@@ -6,6 +6,7 @@ import { KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import PianoRoll from './PianoRoll';
 import SheetScore from './SheetScore';
 import ConfigurationPanel from './ConfigurationPanel';
+import PredictDisplay from './PredictDisplay';
 
 const sharpScale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatScale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -27,6 +28,7 @@ class Dulcitone extends React.Component {
     super(props);
     this.state = {
       clef: 'treble',
+      predictText: 'Try playing some notes and hitting Submit!',
       key: 'C',
       keyType: 'natural',
       keyModulations: [],
@@ -194,14 +196,37 @@ class Dulcitone extends React.Component {
     this.setState({isPlaying: true})
   }
 
+  infer = () => {
+    const scoreText = this.buildScore(this.state.notes);
+    console.log(scoreText)
+
+    this.setState({predictText: null})
+    fetch(
+      '/predict',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({abc_score: scoreText})
+      }
+    )
+      .then(response => response.json())
+      .then(data => {
+        this.setState({predictText: data.prediction})
+      }, error => {
+        console.error('Error', error)
+      })
+  }
+
   render() {
     const scoreText = this.buildScore(this.state.notes);
 
     return (
       <Center>
       <Box borderWidth='1px' borderRadius='lg'>
-        <Grid templateRows={'200px 250px 100px'} gap={6}>
-          <GridItem>
+        <Grid templateRows={'300px 250px 100px'} templateColumns='repeat(3, 1fr)' gap={6}>
+          <GridItem colSpan={3}>
             <SheetScore
               scoreText={scoreText} 
               isPlaying={this.state.isPlaying}
@@ -209,7 +234,7 @@ class Dulcitone extends React.Component {
               onLineEnd={this.onLineEnd}
             />
           </GridItem>
-          <GridItem>
+          <GridItem colSpan={3}>
             <HStack spacing={10}>
               <PianoRoll
                 config={this.props.config}
@@ -221,23 +246,26 @@ class Dulcitone extends React.Component {
                 stopNote={this.props.stopNote}
               />
               <Button onClick={this.insertRest}>Rest</Button>
-              <CopyBlock
-                text={scoreText}
-                theme={dracula}
-                language={'text'}
+              <ConfigurationPanel 
+                validKeys={validKeys} 
+                config={this.props.config} 
+                setClef={this.setClef} 
+                setKey={this.setKey} 
+                resetScore={this.resetScore} 
+                replay={this.replay} 
               />
             </HStack>
           </GridItem>
-          <GridItem>
-            <ConfigurationPanel 
-              validKeys={validKeys} 
-              config={this.props.config} 
-              setClef={this.setClef} 
-              setKey={this.setKey} 
-              resetScore={this.resetScore} 
-              replay={this.replay} 
-              submit={this.props.submit} 
+          <GridItem colSpan={2}>
+            <CopyBlock
+              text={scoreText}
+              theme={dracula}
+              language={'text'}
             />
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Button onClick={this.infer}>Submit</Button>
+            <PredictDisplay predictText={this.state.predictText} />
           </GridItem>
         </Grid>
       </Box>
