@@ -1,4 +1,4 @@
-import { Box, Button, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select, SkeletonText } from '@chakra-ui/react'
+import { Text, SkeletonText } from '@chakra-ui/react'
 
 function PredictDisplay(props) {
   const predictText = props.predictText 

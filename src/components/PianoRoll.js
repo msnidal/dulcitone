@@ -1,7 +1,5 @@
-// Credit to https://raw.githubusercontent.com/kevinsqi/react-piano/master/demo/src/SoundfontProvider.js
 import React from 'react';
-import Soundfont from 'soundfont-player';
-import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import { Piano, KeyboardShortcuts } from 'react-piano';
 import 'react-piano/dist/styles.css';
 
 class PianoRoll extends React.Component {

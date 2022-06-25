@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Button, Stack, HStack, VStack, Radio, RadioGroup, Text, Center, Grid, GridItem, Select } from '@chakra-ui/react'
+import { Box, Button, HStack, Center, Grid, GridItem } from '@chakra-ui/react'
 import { CopyBlock, dracula } from "react-code-blocks";
-import { KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import { MidiNumbers } from 'react-piano';
 
 import PianoRoll from './PianoRoll';
 import SheetScore from './SheetScore';
