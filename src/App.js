@@ -3,7 +3,7 @@ import React from 'react';
 import Soundfont from 'soundfont-player';
 import './App.css';
 import Dulcitone from './components/Dulcitone'
-import Test from './markdown/Test.mdx'
+import Test from './markdown/test.mdx'
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const config = {
